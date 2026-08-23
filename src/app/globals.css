@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@import "@heroui/styles"; 
+
+@layer base {
+  :root {
+    /* Darul Hikmah Brand Colors */
+    --accent: oklch(0.2735 0.1174 274.76); /* #1A1B5F (Primary) */
+    --accent-foreground: var(--white);
+    
+    /* Secondary Color */
+    --secondary: oklch(0.5854 0.2041 277.12); /* #6366F1 (Secondary) */
+    --secondary-foreground: var(--white);
+
+    /* Background & Text */
+    --background: oklch(0.9822 0.0041 271.37); /* #F8F9FC */
+    --foreground: oklch(0.2101 0.0318 264.66); /* #111827 (TextDark) */
+  }
+}
+
+@theme inline {
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-textDark: var(--foreground);
+}
