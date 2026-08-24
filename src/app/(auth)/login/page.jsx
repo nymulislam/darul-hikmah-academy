@@ -5,10 +5,54 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import { Envelope, Eye, EyeSlash } from '@gravity-ui/icons';
 import { Icon } from '@iconify/react';
+import { useRouter } from 'next/navigation';
+import { authClient } from '@/app/lib/auth-client';
 
 const LoginPage = () => {
+    const router = useRouter();
+    
+    // Form States
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
+    
+    // UI & Loading States
     const [isVisible, setIsVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
     const toggleVisibility = () => setIsVisible(!isVisible);
+
+    // Email & Password Login Handler
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setErrorMessage('');
+
+        await authClient.signIn.email({
+            email,
+            password,
+            rememberMe,
+            callbackURL: '/',
+        }, {
+            onRequest: () => setLoading(true),
+            onSuccess: () => {
+                setLoading(false);
+                router.push('/');
+            },
+            onError: (ctx) => {
+                setLoading(false);
+                setErrorMessage(ctx.error.message || 'Invalid email or password');
+            }
+        });
+    };
+
+    // Google Social Login Handler
+    const handleGoogleSignIn = async () => {
+        await authClient.signIn.social({
+            provider: 'google',
+            callbackURL: '/',
+        });
+    };
 
     return (
         <div className="grid place-items-center bg-gray-50 px-6 py-12">
@@ -20,17 +64,29 @@ const LoginPage = () => {
                     <p className="mt-2 text-sm text-gray-500">Please enter your details to sign in</p>
                 </div>
 
+                {/* Error Alert Message */}
+                {errorMessage && (
+                    <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg text-center">
+                        {errorMessage}
+                    </div>
+                )}
+
                 {/* Form */}
-                <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                <form className="space-y-4" onSubmit={handleLogin}>
                     <TextField isRequired className="w-full" name="email">
                         <Label>Email address</Label>
                         <InputGroup>
                             <InputGroup.Prefix>
                                 <Envelope className="size-4 text-muted" />
                             </InputGroup.Prefix>
-                            <InputGroup.Input className="w-full" placeholder="name@email.com" type="email" />
+                            <InputGroup.Input 
+                                className="w-full" 
+                                placeholder="name@email.com" 
+                                type="email" 
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
                         </InputGroup>
-                        <FieldError>Please enter a valid email address</FieldError>
                     </TextField>
 
                     <TextField isRequired className="w-full" name="password">
@@ -40,9 +96,12 @@ const LoginPage = () => {
                                 className="w-full"
                                 type={isVisible ? "text" : "password"}
                                 placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                             <InputGroup.Suffix className="pr-1">
                                 <Button
+                                    type="button"
                                     isIconOnly
                                     aria-label={isVisible ? "Hide password" : "Show password"}
                                     size="sm"
@@ -56,21 +115,32 @@ const LoginPage = () => {
                     </TextField>
 
                     <div className="flex items-center justify-between px-1">
-                        <Checkbox id="primary" name="primary" variant="primary">
+                        <Checkbox 
+                            id="rememberMe" 
+                            name="rememberMe"
+                            isSelected={rememberMe}
+                            onChange={(val) => setRememberMe(typeof val === 'boolean' ? val : val.target.checked)}
+                        >
                             <Checkbox.Control>
                                 <Checkbox.Indicator />
                             </Checkbox.Control>
                             <Checkbox.Content>
-                                <Label htmlFor="primary">Remember me</Label>
+                                <Label htmlFor="rememberMe">Remember me</Label>
                             </Checkbox.Content>
                         </Checkbox>
-                        <Link href="/forgot-password" size="sm" className="text-secondary font-medium hover:underline">
+
+                        <Link href="/forgot-password" className="text-sm text-secondary font-medium hover:underline">
                             Forgot password?
                         </Link>
                     </div>
 
-                    <Button className="w-full bg-[#1A1B5F] text-white font-bold py-6" radius="lg">
-                        Sign In
+                    <Button 
+                        type="submit"
+                        isLoading={loading}
+                        className="w-full bg-[#1A1B5F] text-white font-bold py-6" 
+                        radius="lg"
+                    >
+                        {loading ? 'Signing In...' : 'Sign In'}
                     </Button>
                 </form>
 
@@ -81,7 +151,12 @@ const LoginPage = () => {
                 </div>
 
                 {/* Google Login */}
-                <Button className="w-full border-gray-200 font-semibold" variant="outline">
+                <Button 
+                    type="button" 
+                    onPress={handleGoogleSignIn} 
+                    className="w-full border-gray-200 font-semibold" 
+                    variant="outline"
+                >
                     <Icon icon="devicon:google" />
                     Sign in with Google
                 </Button>
