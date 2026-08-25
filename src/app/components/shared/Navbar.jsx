@@ -123,8 +123,8 @@ export default function Navbar() {
                       <Label>Dashboard</Label>
                     </Dropdown.Item>
 
-                    <Dropdown.Item id="profile" textValue="Profile">
-                      <Label>Profile Update</Label>
+                    <Dropdown.Item id="profile" textValue="Profile" isDisabled="true">
+                      <Label>Profile</Label>
                     </Dropdown.Item>
 
                     <Dropdown.Item id="settings" textValue="Settings" isDisabled="true">

@@ -5,23 +5,27 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import { Envelope, Eye, EyeSlash } from '@gravity-ui/icons';
 import { Icon } from '@iconify/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { authClient } from '@/app/lib/auth-client';
 
 const LoginPage = () => {
     const router = useRouter();
-    
+
     // Form States
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
-    
+
     // UI & Loading States
     const [isVisible, setIsVisible] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
     const toggleVisibility = () => setIsVisible(!isVisible);
+
+    const searchParams = useSearchParams();
+    const rawCallbackUrl = searchParams.get('callbackUrl');
+    const callbackUrl = rawCallbackUrl ? decodeURIComponent(rawCallbackUrl) : '/';
 
     // Email & Password Login Handler
     const handleLogin = async (e) => {
@@ -32,12 +36,13 @@ const LoginPage = () => {
             email,
             password,
             rememberMe,
-            callbackURL: '/',
+            callbackURL: callbackUrl,
         }, {
             onRequest: () => setLoading(true),
             onSuccess: () => {
                 setLoading(false);
-                router.push('/');
+                router.push(callbackUrl);
+                router.refresh();
             },
             onError: (ctx) => {
                 setLoading(false);
@@ -48,9 +53,13 @@ const LoginPage = () => {
 
     // Google Social Login Handler
     const handleGoogleSignIn = async () => {
+        const fullCallbackUrl = typeof window !== 'undefined'
+            ? `${window.location.origin}${callbackUrl}`
+            : callbackUrl;
+
         await authClient.signIn.social({
             provider: 'google',
-            callbackURL: '/',
+            callbackURL: fullCallbackUrl,
         });
     };
 
@@ -79,10 +88,10 @@ const LoginPage = () => {
                             <InputGroup.Prefix>
                                 <Envelope className="size-4 text-muted" />
                             </InputGroup.Prefix>
-                            <InputGroup.Input 
-                                className="w-full" 
-                                placeholder="name@email.com" 
-                                type="email" 
+                            <InputGroup.Input
+                                className="w-full"
+                                placeholder="name@email.com"
+                                type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
@@ -115,8 +124,8 @@ const LoginPage = () => {
                     </TextField>
 
                     <div className="flex items-center justify-between px-1">
-                        <Checkbox 
-                            id="rememberMe" 
+                        <Checkbox
+                            id="rememberMe"
                             name="rememberMe"
                             isSelected={rememberMe}
                             onChange={(val) => setRememberMe(typeof val === 'boolean' ? val : val.target.checked)}
@@ -134,10 +143,10 @@ const LoginPage = () => {
                         </Link>
                     </div>
 
-                    <Button 
+                    <Button
                         type="submit"
                         isLoading={loading}
-                        className="w-full bg-[#1A1B5F] text-white font-bold py-6" 
+                        className="w-full bg-[#1A1B5F] text-white font-bold py-6"
                         radius="lg"
                     >
                         {loading ? 'Signing In...' : 'Sign In'}
@@ -151,10 +160,10 @@ const LoginPage = () => {
                 </div>
 
                 {/* Google Login */}
-                <Button 
-                    type="button" 
-                    onPress={handleGoogleSignIn} 
-                    className="w-full border-gray-200 font-semibold" 
+                <Button
+                    type="button"
+                    onPress={handleGoogleSignIn}
+                    className="w-full border-gray-200 font-semibold"
                     variant="outline"
                 >
                     <Icon icon="devicon:google" />
