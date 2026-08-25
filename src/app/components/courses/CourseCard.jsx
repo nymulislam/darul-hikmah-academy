@@ -1,9 +1,11 @@
+"use client";
+
 import { Button, Card, CardHeader, Chip } from "@heroui/react";
 import { Clock, Users } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
-
-const CourseCard = ({course}) => {
+const CourseCard = ({ course }) => {
     return (
         <Card
             className="border-none rounded-[2.5rem] hover:shadow-[0_20px_50px_rgba(26,27,95,0.15)] transition-all duration-500 group"
@@ -41,13 +43,16 @@ const CourseCard = ({course}) => {
 
                 <div className="flex justify-between items-center">
                     <span className="text-2xl font-black text-textDark">${course.price}</span>
-                    <Button
-                        color="primary"
-                        radius="full"
-                        className="font-bold px-8 shadow-lg shadow-accent-soft-hover hover:opacity-90"
-                    >
-                        Enroll
-                    </Button>
+
+                    <Link href={`/courses/${course.id}`}>
+                        <Button
+                            color="primary"
+                            radius="full"
+                            className="font-bold px-8 shadow-lg shadow-accent-soft-hover hover:opacity-90 cursor-pointer"
+                        >
+                            Details
+                        </Button>
+                    </Link>
                 </div>
             </Card.Content>
         </Card>

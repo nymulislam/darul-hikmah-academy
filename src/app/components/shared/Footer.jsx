@@ -1,6 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
-import { Button, Input } from "@heroui/react";
+import { Button } from "@heroui/react";
 import {
   FiMail,
   FiPhone,
@@ -122,21 +124,21 @@ const Footer = () => {
                 Subscribe for updates
               </p>
               <div className="flex gap-2">
-                <Input
-                  type="email"
-                  placeholder="Email Address"
-                  size="sm"
-                  startContent={<FiMail className="text-gray-500 flex-shrink-0" size={14} />}
-                  classNames={{
-                    base: "flex-1",
-                    inputWrapper:
-                      "bg-white/5 border border-white/10 hover:border-secondary/50 focus-within:border-secondary transition-all rounded-xl",
-                    input: "text-white text-sm placeholder:text-gray-500",
-                  }}
-                />
+                {/* Input-এর চারপাশে Absolute Positioning দিয়ে Icon বসানো হয়েছে */}
+                <div className="relative flex-1">
+                  <FiMail
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10 pointer-events-none"
+                    size={14}
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email Address"
+                    className="w-full pl-9 pr-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-gray-500 hover:border-secondary/50 focus:border-secondary focus:outline-none transition-all"
+                  />
+                </div>
                 <Button
                   size="sm"
-                  className="bg-secondary text-white font-bold px-4 rounded-xl shrink-0 hover:bg-secondary/80 transition-colors"
+                  className="bg-secondary text-white font-bold px-4 rounded-xl shrink-0 hover:bg-secondary/80 transition-colors h-auto"
                 >
                   ✓ Submit
                 </Button>

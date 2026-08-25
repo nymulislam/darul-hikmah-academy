@@ -119,15 +119,15 @@ export default function Navbar() {
                       if (key === "settings") router.push("/settings");
                     }}
                   >
-                    <Dropdown.Item id="dashboard" textValue="Dashboard">
+                    <Dropdown.Item id="dashboard" textValue="Dashboard" isDisabled="true">
                       <Label>Dashboard</Label>
                     </Dropdown.Item>
 
                     <Dropdown.Item id="profile" textValue="Profile">
-                      <Label>Profile</Label>
+                      <Label>Profile Update</Label>
                     </Dropdown.Item>
 
-                    <Dropdown.Item id="settings" textValue="Settings">
+                    <Dropdown.Item id="settings" textValue="Settings" isDisabled="true">
                       <div className="flex w-full items-center justify-between gap-2">
                         <Label>Settings</Label>
                         <Gear className="size-3.5 text-muted" />
